@@ -3,7 +3,7 @@
 // Author      : Tofig Kareemov
 // Version     :
 // Copyright   : Your copyright notice
-// Description : Xincrol! algorithm implementaion. C++, Ansi-style
+// Description : Xincrol! algorithm in C++, Ansi-style
 //============================================================================
 
 #include <stdio.h>
@@ -16,7 +16,6 @@ int current_timestamp() {
 	struct timeval te;
 	gettimeofday(&te, NULL); // get current time // @suppress("Symbol is not resolved") // @suppress("Invalid arguments")
 	long long milliseconds = te.tv_sec * 1000LL + te.tv_usec / 1000; // calculate milliseconds // @suppress("Field cannot be resolved")
-	printf("milliseconds: %lld\n", milliseconds);
 	return (int) milliseconds;
 }
 
@@ -50,22 +49,26 @@ unsigned int xincrol(unsigned int iIndex, unsigned int iBits,
 	unsigned int iInnerSeed = 0x5a5aa5a5 ^ _reverse_(iSeed);
 	unsigned int iResult = (iIndex ^ _reverse_(iInnerSeed)) & iMask;
 	for (int i = 0; i < 256 * iBits; ++i) {
-		iInnerSeed = iInnerSeed ^ iSeed;
-		unsigned int iOperation = iInnerSeed & 3;
-		if (iOperation == 0) {
+		unsigned int iLocalInnerSeed = iInnerSeed ^ iSeed;
+		switch (iLocalInnerSeed & 3) {
+		case 0:
 			// Xor
-			iResult = (iResult ^ iInnerSeed) & iMask;
-		} else if (iOperation == 1) {
+			iResult = (iResult ^ iLocalInnerSeed) & iMask;
+			iInnerSeed = _rol_(iInnerSeed);
+			break;
+		case 1:
 			// Inc
 			iResult = (iResult + 1) & iMask;
-		} else if (iOperation == 2) {
+			break;
+		case 2:
 			// ROL Bits
 			iResult = ((iResult << 1) | ((iResult >> (iBits - 1)) & 1)) & iMask;
-		} else if (iOperation == 3) {
+			break;
+		default:
 			// Not
 			iResult = (iResult ^ 0xFFFFFFFF) & iMask;
+			break;
 		}
-		iInnerSeed = iInnerSeed ^ iSeed;
 		++iSeed;
 		iInnerSeed = _rol_(iInnerSeed);
 	}
@@ -73,11 +76,11 @@ unsigned int xincrol(unsigned int iIndex, unsigned int iBits,
 }
 
 int main(void) {
-	puts("Xincrol demonstration"); /* prints !!!Hello World!!! */ // @suppress("Invalid arguments")
+	printf("Xincrol demonstration\n"); /* prints !!!Hello World!!! */ // @suppress("Invalid arguments")
 	int iBits = 8;
 	unsigned int iSeed = current_timestamp();
 	for (unsigned int i = 0; i < 1 << iBits; ++i) {
-		printInt(xincrol(i, iBits, iSeed)); // @suppress("Invalid arguments")
+		printInt(xincrol(i, iBits, iSeed));
 	}
-	return EXIT_SUCCESS; // @suppress("Symbol is not resolved")
+	return 0;
 }
