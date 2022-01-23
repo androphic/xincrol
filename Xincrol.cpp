@@ -3,7 +3,7 @@
 // Author      : Tofig Kareemov
 // Version     :
 // Copyright   : Your copyright notice
-// Description : Hello World in C++, Ansi-style
+// Description : Xincrol! algorithm implementaion. C++, Ansi-style
 //============================================================================
 
 #include <stdio.h>
