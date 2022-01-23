@@ -14,8 +14,8 @@
 
 int current_timestamp() {
 	struct timeval te;
-	gettimeofday(&te, NULL); // get current time // @suppress("Symbol is not resolved") // @suppress("Invalid arguments")
-	long long milliseconds = te.tv_sec * 1000LL + te.tv_usec / 1000; // calculate milliseconds // @suppress("Field cannot be resolved")
+	gettimeofday(&te, NULL);
+	long long milliseconds = te.tv_sec * 1000LL + te.tv_usec / 1000;
 	return (int) milliseconds;
 }
 
@@ -76,7 +76,7 @@ unsigned int xincrol(unsigned int iIndex, unsigned int iBits,
 }
 
 int main(void) {
-	printf("Xincrol demonstration\n"); /* prints !!!Hello World!!! */ // @suppress("Invalid arguments")
+	printf("Xincrol demonstration\n");
 	int iBits = 8;
 	unsigned int iSeed = current_timestamp();
 	for (unsigned int i = 0; i < 1 << iBits; ++i) {
