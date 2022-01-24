@@ -38,10 +38,10 @@ Magical operations are XOR, INC and ROL (the name of algorithm).
 There are also DEC and ROR operations which could be used instead of INC and ROL.
 There are 4 possible groups of operations:
 
-XOR, INC, ROL 
-XOR, DEC, ROL
-XOR, INC, ROR
-XOR, DEC, ROR
+[XOR, INC, ROL] 
+[XOR, DEC, ROL]
+[XOR, INC, ROR]
+[XOR, DEC, ROR]
 
 where...
 XOR - exclusive disjunction,
@@ -54,7 +54,7 @@ Why is this happening? Well, because those operations are cyclic and directional
 
 Important: Don't use INC and DEC  in the same cycle, don't use ROR and ROL in the same cycle!
 
-Here I am publishing simple Java code of one of my Xincrol implementations.
+Here I am publishing simple code of one of my Xincrol implementations.
 This implementation also has ability to set a different range for generated unique numbers.
 There is main() method below that demonstrates how it works. 
 Have it! Enjoy it! 
