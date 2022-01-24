@@ -77,7 +77,7 @@ unsigned int xincrol(unsigned int iIndex, unsigned int iBits,
 
 int main(void) {
 	printf("Xincrol demonstration\n");
-	int iBits = 8;
+	int iBits = 16;
 	unsigned int iSeed = currentTimeMillis();
 	for (unsigned int i = 0; i < 1 << iBits; ++i) {
 		printInt(xincrol(i, iBits, iSeed));
