@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 
-#define INT_BITS (sizeof(int)*8)
+#define INT_BITS (32)
 
 unsigned int currentTimeMillis() {
 	struct timeval te;
@@ -30,8 +30,7 @@ void printInt(int iInput) {
 inline unsigned int _reverse_(unsigned int iInput) {
 	unsigned int iResult = 0;
 	for (int i = 0; i < INT_BITS; ++i) {
-		iResult = iResult << 1;
-		iResult = iResult | (iInput & 1);
+		iResult = (iResult << 1) | (iInput & 1);
 		iInput = iInput >> 1;
 	}
 	return iResult;
@@ -45,10 +44,10 @@ unsigned int xincrol(unsigned int iIndex, unsigned int iBits,
 		unsigned int iSeed) {
 	unsigned int iMask = (1 << iBits) - 1;
 	unsigned int iRolBackBits = iBits - 1;
-	unsigned int iInnerSeed = 0x5a5aa5a5 ^ _reverse_(iSeed);
+	unsigned int iInnerSeed = 0x5aa55aa5 ^ _reverse_(iSeed);
 	unsigned int iResult = (iIndex ^ _reverse_(iInnerSeed)) & iMask;
 	for (int i = 0; i < 256 * iBits; ++i) {
-		unsigned int iLocalInnerSeed = iInnerSeed ^ iSeed ^ _reverse_(iSeed);
+		unsigned int iLocalInnerSeed = iInnerSeed ^ iSeed;
 		switch (iLocalInnerSeed >> (INT_BITS - 2)) {
 		case 0:
 			// Xor
@@ -57,7 +56,8 @@ unsigned int xincrol(unsigned int iIndex, unsigned int iBits,
 			break;
 		case 1:
 			// Inc
-			iResult = (iResult + 1) & iMask;
+			iResult = (iResult + iLocalInnerSeed) & iMask;
+			iInnerSeed = _rol_(iInnerSeed);
 			break;
 		case 2:
 			// ROL Bits
@@ -76,8 +76,9 @@ unsigned int xincrol(unsigned int iIndex, unsigned int iBits,
 }
 
 int main(void) {
+
 	printf("Xincrol demonstration\n");
-	int iBits = 16;
+	int iBits = 31;
 	unsigned int iSeed = currentTimeMillis();
 	for (unsigned int i = 0; i < 1 << iBits; ++i) {
 		printInt(xincrol(i, iBits, iSeed));
