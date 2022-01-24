@@ -14,13 +14,13 @@ The other common practice is to create huge array, fill it with serial numbers a
 Those solutions are very CPU and memory consuming.
 At the same time there are millions of SW applications which are seriously require URNGs.
 Some examples of such applications:
-Video and Image Effects
-Encryption 
-Steganography
+Video and Image Effects,
+Encryption, 
+Steganography, Machine learning.
 All kinds of unique but secure (not serial) IDs (ex. any website with big DB)
 Random serial numbers for money bills, car license plates, airplane part numbers etc. 
-MP3 player playlist shuffling
-Playing Cards shuffling for Casinos
+MP3 player playlist shuffling.
+Playing Cards shuffling for Casinos.
 Absolutely every Computer game needs unique randomization
 ASCII to ASCII encryption/decryption 
 Random memory or disk space addressing
