@@ -10,13 +10,13 @@
 #include <stdlib.h>
 #include <sys/time.h>
 
-#define INT_BITS sizeof(int)
+#define INT_BITS (sizeof(int)*8)
 
-int current_timestamp() {
+unsigned int currentTimeMillis() {
 	struct timeval te;
-	gettimeofday(&te, NULL);
+	gettimeofday(&te, 0);
 	long long milliseconds = te.tv_sec * 1000LL + te.tv_usec / 1000;
-	return (int) milliseconds;
+	return (unsigned int) milliseconds;
 }
 
 void printHex(int iInput) {
@@ -30,10 +30,8 @@ void printInt(int iInput) {
 inline unsigned int _reverse_(unsigned int iInput) {
 	unsigned int iResult = 0;
 	for (int i = 0; i < INT_BITS; ++i) {
-		if ((iInput & 1) != 0) {
-			iResult = iResult | 1;
-		}
 		iResult = iResult << 1;
+		iResult = iResult | (iInput & 1);
 		iInput = iInput >> 1;
 	}
 	return iResult;
@@ -46,11 +44,12 @@ inline unsigned int _rol_(unsigned int iInput) {
 unsigned int xincrol(unsigned int iIndex, unsigned int iBits,
 		unsigned int iSeed) {
 	unsigned int iMask = (1 << iBits) - 1;
+	unsigned int iRolBackBits = iBits - 1;
 	unsigned int iInnerSeed = 0x5a5aa5a5 ^ _reverse_(iSeed);
 	unsigned int iResult = (iIndex ^ _reverse_(iInnerSeed)) & iMask;
 	for (int i = 0; i < 256 * iBits; ++i) {
-		unsigned int iLocalInnerSeed = iInnerSeed ^ iSeed;
-		switch (iLocalInnerSeed & 3) {
+		unsigned int iLocalInnerSeed = iInnerSeed ^ iSeed ^ _reverse_(iSeed);
+		switch (iLocalInnerSeed >> (INT_BITS - 2)) {
 		case 0:
 			// Xor
 			iResult = (iResult ^ iLocalInnerSeed) & iMask;
@@ -62,7 +61,8 @@ unsigned int xincrol(unsigned int iIndex, unsigned int iBits,
 			break;
 		case 2:
 			// ROL Bits
-			iResult = ((iResult << 1) | ((iResult >> (iBits - 1)) & 1)) & iMask;
+			iResult = ((iResult << 1) | ((iResult >> iRolBackBits) & 1))
+					& iMask;
 			break;
 		default:
 			// Not
@@ -78,7 +78,7 @@ unsigned int xincrol(unsigned int iIndex, unsigned int iBits,
 int main(void) {
 	printf("Xincrol demonstration\n");
 	int iBits = 8;
-	unsigned int iSeed = current_timestamp();
+	unsigned int iSeed = currentTimeMillis();
 	for (unsigned int i = 0; i < 1 << iBits; ++i) {
 		printInt(xincrol(i, iBits, iSeed));
 	}
