@@ -4,6 +4,9 @@
 // Version     :
 // Copyright   : Your copyright notice
 // Description : Xincrol! algorithm in C++, Ansi-style
+// Unique Random Number Generator. For generation random numbers stream where
+// each number appears only once. Useful for IDs, encryption, visual 
+// effects, Random Forest building etc.
 //============================================================================
 
 #include <stdio.h>
@@ -13,10 +16,10 @@
 #define INT_BITS (32)
 
 unsigned int currentTimeMillis() {
-	struct timeval te;
-	gettimeofday(&te, 0);
-	long long milliseconds = te.tv_sec * 1000LL + te.tv_usec / 1000;
-	return (unsigned int) milliseconds;
+	struct timeval oTime;
+	gettimeofday(&oTime, 0);
+	long long iMilliseconds = oTime.tv_sec * 1000LL + oTime.tv_usec / 1000;
+	return (unsigned int) iMilliseconds;
 }
 
 void printHex(int iInput) {
@@ -40,48 +43,32 @@ inline unsigned int _rol_(unsigned int iInput) {
 	return ((iInput << 1) | (iInput >> (INT_BITS - 1)));
 }
 
-unsigned int xincrol(unsigned int iIndex, unsigned int iBits,
-		unsigned int iSeed) {
+inline unsigned int _rol_(unsigned int iInput, unsigned int iBits) {
 	unsigned int iMask = (1 << iBits) - 1;
 	unsigned int iRolBackBits = iBits - 1;
-	unsigned int iInnerSeed = 0x5aa55aa5 ^ _reverse_(iSeed);
-	unsigned int iResult = (iIndex ^ _reverse_(iInnerSeed)) & iMask;
-	for (int i = 0; i < 256 * iBits; ++i) {
-		unsigned int iLocalInnerSeed = iInnerSeed ^ iSeed;
-		switch (iLocalInnerSeed >> (INT_BITS - 2)) {
-		case 0:
-			// Xor
-			iResult = (iResult ^ iLocalInnerSeed) & iMask;
-			iInnerSeed = _rol_(iInnerSeed);
-			break;
-		case 1:
-			// Inc
-			iResult = (iResult + iLocalInnerSeed) & iMask;
-			iInnerSeed = _rol_(iInnerSeed);
-			break;
-		case 2:
-			// ROL Bits
-			iResult = ((iResult << 1) | ((iResult >> iRolBackBits) & 1))
-					& iMask;
-			break;
-		default:
-			// Not
-			iResult = (iResult ^ 0xFFFFFFFF) & iMask;
-			break;
-		}
-		++iSeed;
-		iInnerSeed = _rol_(iInnerSeed);
+	return ((iInput << 1) | ((iInput >> iRolBackBits) & 1)) & iMask;
+}
+
+unsigned int xincrol(unsigned int iIndex1, unsigned iIndex2,
+		unsigned int iBits) {
+	unsigned int iResult = 0x5aa55aa5 ^ iIndex1;
+	unsigned int iKey = 0xaa55aa55 ^ _reverse_(iIndex2);
+	for (int i = 0; i < INT_BITS * INT_BITS; ++i) {
+		iResult = _rol_((iResult + i) ^ iKey, iBits);
+		iKey = _rol_(++iKey);
 	}
 	return iResult;
 }
 
 int main(void) {
-
 	printf("Xincrol demonstration\n");
-	int iBits = 31;
+	int iBits = 20;
 	unsigned int iSeed = currentTimeMillis();
+	int iTS = currentTimeMillis();
 	for (unsigned int i = 0; i < 1 << iBits; ++i) {
-		printInt(xincrol(i, iBits, iSeed));
+		unsigned int iResult = xincrol(i, iSeed, iBits);
+		printHex(iResult);
 	}
+	printf("Time spent(millis): %d\n", currentTimeMillis() - iTS);
 	return 0;
 }
